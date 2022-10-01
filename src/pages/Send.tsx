@@ -113,7 +113,6 @@ export default function Send({ multisigAddress, destinationAddress, amount, nonc
   }, [signatureInputs]);
 
   useEffect(() => {
-    console.log(state);
     if (state.status == 'Exception') {
       setStatusMessage(state.errorMessage ?? '');
     } else if (state.status == 'Mining') {
@@ -166,8 +165,6 @@ export default function Send({ multisigAddress, destinationAddress, amount, nonc
               <button
                 type="button"
                 onClick={async () => {
-                  console.log(GnosisContract);
-
                   await send(
                     destinationAddress,
                     amount,
