@@ -1,6 +1,7 @@
 # ETHW Gnosis Safe Multisig Recovery
 
-⚠️ WIP: Do not use. ⚠️
+## Deployment
+You can try out this tool here: https://devanonon.github.io/ethw-gnosis-recovery/
 
 ## Setup
 `npm install`

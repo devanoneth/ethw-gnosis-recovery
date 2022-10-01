@@ -1,7 +1,7 @@
 import { useContractCall, useContractFunction } from '@usedapp/core';
 import { useEffect, useState } from 'react';
 import { Gnosis } from '../utils/contracts';
-import { BigNumber, Contract } from 'ethers';
+import { BigNumber, Contract, ethers } from 'ethers';
 import { recoverTypedData } from '../utils/signature';
 import { ETHWChain } from '..';
 
@@ -46,6 +46,7 @@ export default function Send({ multisigAddress, destinationAddress, amount, nonc
 
   const { send, state } = useContractFunction(GnosisContract, 'execTransaction', {
     transactionName: 'ExecTransaction',
+    gasLimitBufferPercentage: 100,
   });
 
   useEffect(() => {
@@ -104,11 +105,21 @@ export default function Send({ multisigAddress, destinationAddress, amount, nonc
         return addressSignature.sig;
       });
 
-    const signatureInputsWithoutPrefix = sortedSignatures.map((sig) => sig.replace('0x', ''));
+    const signatureInputsWithoutPrefix = sortedSignatures
+      .map((sig) => {
+        const isInvalidLedgerSignature = sig.endsWith('00') || sig.endsWith('01');
+
+        if (!isInvalidLedgerSignature) return sig;
+
+        const { r, s, v, recoveryParam } = ethers.utils.splitSignature(sig);
+        return ethers.utils.joinSignature({ r, s, v, recoveryParam });
+      })
+      .map((sig) => sig.replace('0x', ''));
     const signatures = signatureInputsWithoutPrefix.join('');
 
     if (signatures.length == 130 * lastThreshold) {
       setCombinedSignatures('0x' + signatures);
+      console.log('0x' + signatures);
     }
   }, [signatureInputs]);
 
@@ -167,8 +178,8 @@ export default function Send({ multisigAddress, destinationAddress, amount, nonc
                 onClick={async () => {
                   await send(
                     destinationAddress,
-                    amount,
-                    '',
+                    amount.toHexString(),
+                    [],
                     '0',
                     '0',
                     '0',
