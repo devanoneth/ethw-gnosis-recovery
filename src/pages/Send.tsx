@@ -5,6 +5,15 @@ import { BigNumber, Contract } from 'ethers';
 import { recoverTypedData } from '../utils/signature';
 import { ETHWChain } from '..';
 
+type AddressSignature = {
+  address: string;
+  sig: string;
+};
+
+const isAddressSignature = (item: AddressSignature | undefined): item is AddressSignature => {
+  return !!item;
+};
+
 type SendProps = {
   multisigAddress: string;
   destinationAddress: string;
@@ -63,6 +72,7 @@ export default function Send({ multisigAddress, destinationAddress, amount, nonc
   }, [threshold]);
 
   useEffect(() => {
+    setCombinedSignatures('');
     const addressArray = addressOutputs.concat();
 
     const addressSignatureMap = signatureInputs.map((signatureInput, i) => {
@@ -72,7 +82,8 @@ export default function Send({ multisigAddress, destinationAddress, amount, nonc
 
           addressArray[i] = address;
           return {
-            [address]: signatureInput,
+            address: address,
+            sig: signatureInput,
           };
         } catch (e) {
           console.error(e);
@@ -84,14 +95,18 @@ export default function Send({ multisigAddress, destinationAddress, amount, nonc
     });
     setAddressOuputs(addressArray);
 
-    console.log(addressSignatureMap.sort());
+    const sortedSignatures = addressSignatureMap
+      .filter(isAddressSignature)
+      .sort((a, b) => {
+        return a.address.localeCompare(b.address);
+      })
+      .map((addressSignature) => {
+        return addressSignature.sig;
+      });
 
-    const signatureInputsWithoutPrefix = signatureInputs.map((signatureInput) => signatureInput.replace('0x', ''));
+    const signatureInputsWithoutPrefix = sortedSignatures.map((sig) => sig.replace('0x', ''));
     const signatures = signatureInputsWithoutPrefix.join('');
 
-    // TODO: The combined signatures need to be sorted so that the recovered signers are sorted ascending
-    // @see https://github.com/gnosis/safe-contracts/blob/da66b45ec87d2fb6da7dfd837b29eacdb9a604c5/contracts/GnosisSafe.sol#L301
-    // @see https://github.com/gnosis/safe-react/blob/87ea3d70a8f42a9d7f57e4ea2f7975a417f4a884/src/logic/safe/safeTxSigner.ts#L46
     if (signatures.length == 130 * lastThreshold) {
       setCombinedSignatures('0x' + signatures);
     }
@@ -126,17 +141,13 @@ export default function Send({ multisigAddress, destinationAddress, amount, nonc
           </p>
 
           <p>
-            Note: signatures must be inputted so that the recovered signers are sorted ascending. This will be automated
-            soon.
-          </p>
-          <p>
-            Another note: you should manually set a gas limit of around 500,000 in your wallet. Gnosis Safe TXs require
-            quite a bit, plus your ERC20 transfer on top. This will also be auotmated soon.
+            Note: you should manually set a gas limit of around 500,000 in your wallet. Gnosis Safe TXs require quite a
+            bit. This will be automated soon.
           </p>
 
           {signatureNumbers.map((signatureNumber) => {
             return (
-              <div key={signatureNumber}>
+              <div className="signatureInput" key={signatureNumber}>
                 <h3>Signature {(signatureNumber + 1).toString()}</h3>
                 <input
                   type="text"

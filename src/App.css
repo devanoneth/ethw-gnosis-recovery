@@ -51,6 +51,10 @@
   margin-left: 0.5rem;
 }
 
+.signatureInput {
+  margin-bottom: 1rem;
+}
+
 .bold {
   font-weight: bold;
 }
