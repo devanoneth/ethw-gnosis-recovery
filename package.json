@@ -1,0 +1,47 @@
+{
+  "name": "ethw-gnosis-multisig-recovery",
+  "version": "1.0.0",
+  "private": true,
+  "homepage": "http://devanonon.github.io/ethw-gnosis-recovery/",
+  "devDependencies": {
+    "@types/node": "^16.11.17",
+    "@types/react": "^17.0.38",
+    "@types/react-dom": "^17.0.11",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-unused-imports": "^2.0.0",
+    "gh-pages": "^3.2.3",
+    "react-scripts": "5.0.0",
+    "typescript": "^4.5.4"
+  },
+  "dependencies": {
+    "@usedapp/core": "^1.1.5",
+    "eslint": "^8.5.0",
+    "ethers": "^5.7.1",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-router-dom": "^6.2.1"
+  },
+  "scripts": {
+    "start": "BROWSER=none react-scripts start",
+    "build": "react-scripts build",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

@@ -1,0 +1,69 @@
+.App {
+  text-align: center;
+  margin: 2rem auto;
+  max-width: 1000px;
+}
+
+.tabs {
+  padding-top: 2rem;
+  padding-bottom: 0.5rem;
+  margin-left: 2rem;
+  margin-right: 2rem;
+  overflow: hidden;
+}
+
+.tabs a {
+  margin: 0 2rem;
+  border: 2px solid black;
+  border-radius: 10px;
+  padding: 1rem;
+  border-bottom: 0;
+  text-decoration: none;
+}
+
+.tabs a:hover {
+  text-decoration: underline;
+}
+
+.main {
+  border: 2px solid black;
+  border-radius: 10px;
+  background-color: white;
+}
+
+.code {
+  width: 80%;
+  display: flex;
+  justify-content: center;
+  margin: 0 auto;
+}
+
+.code pre {
+  width: 50%;
+  word-wrap: break-word;
+  overflow: scroll;
+  padding: 1rem 0;
+  margin: 0;
+}
+
+.code a {
+  padding-top:1rem;
+  margin-left: 0.5rem;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+.small {
+  font-size: small;
+}
+
+footer {
+  margin: 2rem auto;
+}
+
+button {
+  margin: 1rem;
+  padding: 0.5rem;
+}
