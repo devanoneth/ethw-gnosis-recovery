@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/ethw-gnosis-recovery/static/css/main.5be50d8e.css",
+    "main.js": "/ethw-gnosis-recovery/static/js/main.de84acbf.js",
+    "index.html": "/ethw-gnosis-recovery/index.html",
+    "main.5be50d8e.css.map": "/ethw-gnosis-recovery/static/css/main.5be50d8e.css.map",
+    "main.de84acbf.js.map": "/ethw-gnosis-recovery/static/js/main.de84acbf.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.5be50d8e.css",
+    "static/js/main.de84acbf.js"
+  ]
+}
