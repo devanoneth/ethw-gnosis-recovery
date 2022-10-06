@@ -20,9 +20,17 @@ type SendProps = {
   amount: BigNumber;
   nonce: number;
   onSuccess: any;
+  ignoreChainId: boolean;
 };
 
-export default function Send({ multisigAddress, destinationAddress, amount, nonce, onSuccess }: SendProps) {
+export default function Send({
+  multisigAddress,
+  destinationAddress,
+  amount,
+  nonce,
+  ignoreChainId,
+  onSuccess,
+}: SendProps) {
   const [signatureNumbers, setSignatureNumbers] = useState([0]);
   const [signatureInputs, setSignatureInputs] = useState(['']);
   const [addressOutputs, setAddressOuputs] = useState(['']);
@@ -79,7 +87,14 @@ export default function Send({ multisigAddress, destinationAddress, amount, nonc
     const addressSignatureMap = signatureInputs.map((signatureInput, i) => {
       if (signatureInput.length == 132) {
         try {
-          const address = recoverTypedData(multisigAddress, destinationAddress, amount, nonce, signatureInput);
+          const address = recoverTypedData(
+            multisigAddress,
+            destinationAddress,
+            amount,
+            nonce,
+            ignoreChainId,
+            signatureInput
+          );
 
           addressArray[i] = address;
           return {

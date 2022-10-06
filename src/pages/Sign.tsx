@@ -8,9 +8,10 @@ type BuildProps = {
   destinationAddress: string;
   amount: BigNumber;
   nonce: number;
+  ignoreChainId: boolean;
 };
 
-export default function Sign({ multisigAddress, destinationAddress, amount, nonce }: BuildProps) {
+export default function Sign({ multisigAddress, destinationAddress, amount, nonce, ignoreChainId }: BuildProps) {
   const { account, library } = useEthers();
 
   const [signature, setSignature] = useState('');
@@ -40,6 +41,7 @@ export default function Sign({ multisigAddress, destinationAddress, amount, nonc
                   destinationAddress,
                   amount,
                   nonce,
+                  ignoreChainId,
                   library
                 );
 

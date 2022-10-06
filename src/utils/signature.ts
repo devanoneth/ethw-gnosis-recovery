@@ -1,4 +1,4 @@
-import { BigNumber, utils } from 'ethers';
+import { BigNumber, TypedDataDomain, utils } from 'ethers';
 import { JsonRpcProvider } from '@ethersproject/providers';
 import { ETHWChain } from '..';
 
@@ -8,13 +8,32 @@ export async function signTypedData(
   destinationAddress: string,
   amount: BigNumber,
   nonce: number,
+  ignoreChainId: boolean,
   provider: JsonRpcProvider
 ): Promise<string> {
-  const msgParams = JSON.stringify({
-    domain: {
-      chainId: ETHWChain.chainId.valueOf(),
-      verifyingContract: multisigAddress,
+  const domain: TypedDataDomain = {
+    verifyingContract: multisigAddress,
+  };
+
+  const EIP712Domain = [
+    {
+      type: 'address',
+      name: 'verifyingContract',
     },
+  ];
+
+  if (!ignoreChainId) {
+    domain.chainId = ETHWChain.chainId.valueOf();
+
+    // needs to be at the start of the array
+    EIP712Domain.unshift({
+      type: 'uint256',
+      name: 'chainId',
+    });
+  }
+
+  const msgParams = JSON.stringify({
+    domain,
     message: {
       to: destinationAddress,
       value: amount.toHexString(),
@@ -29,16 +48,7 @@ export async function signTypedData(
     },
     primaryType: 'SafeTx',
     types: {
-      EIP712Domain: [
-        {
-          type: 'uint256',
-          name: 'chainId',
-        },
-        {
-          type: 'address',
-          name: 'verifyingContract',
-        },
-      ],
+      EIP712Domain,
       SafeTx: [
         { type: 'address', name: 'to' },
         { type: 'uint256', name: 'value' },
@@ -62,13 +72,19 @@ export function recoverTypedData(
   destinationAddress: string,
   amount: BigNumber,
   nonce: number,
+  ignoreChainId: boolean,
   signature: string
 ): string {
+  const domain: TypedDataDomain = {
+    verifyingContract: multisigAddress,
+  };
+
+  if (!ignoreChainId) {
+    domain.chainId = ETHWChain.chainId.valueOf();
+  }
+
   return utils.verifyTypedData(
-    {
-      chainId: ETHWChain.chainId.valueOf(),
-      verifyingContract: multisigAddress,
-    },
+    domain,
     {
       SafeTx: [
         { type: 'address', name: 'to' },

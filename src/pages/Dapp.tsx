@@ -83,6 +83,11 @@ export default function Dapp() {
     }
   };
 
+  const [checked, setChecked] = useState(false);
+  const handleChange = () => {
+    setChecked(!checked);
+  };
+
   const onNumberInput = (numberTarget: EventTarget & HTMLInputElement, inputSetter: any) => {
     numberTarget.validity.valid && inputSetter(numberTarget.value);
   };
@@ -105,7 +110,10 @@ export default function Dapp() {
           <h3>Gnosis Multisig Address</h3>
           <input
             type="text"
-            onChange={(e) => onAddressInput(e.target.value, setMultisigAddressInput, setMultisigAddress)}
+            onChange={(e) => {
+              onAddressInput(e.target.value, setMultisigAddressInput, setMultisigAddress);
+              setAmountInput('');
+            }}
             value={multisigAddressInput}
           />
 
@@ -139,87 +147,101 @@ export default function Dapp() {
                   <p className="small">Prefilled to current nonce, but you can manually change this if needed.</p>
 
                   <h3>Gnosis Safe Version</h3>
-                  <p className="small">
-                    {versionContract}
-                  </p>
-                  <p className="small">
-                    {versionContract !== '1.3.0' &&
-                      'Please note, your Gnosis Safe is on a version which does not check the chain id of the current chain. If your Gnosis Safe on mainnet is also below v1.3.0 you could be prone to replay attacks by sending your ETHW.'}
-                  </p>
+                  <p className="small">{versionContract}</p>
 
-                  <div>
-                    <button
-                      type="button"
-                      onClick={async () => {
-                        navigator.clipboard.writeText(
-                          `${window.location.origin}${process.env.PUBLIC_URL}#/sign?multisigAddress=${multisigAddress}&amount=${amountInput}&destinationAddress=${destinationAddress}&nonce=${nonceInput}`
-                        );
-
-                        setLinkButtonText('Copied to cliboard...');
-                        setLink(true);
-
-                        setTimeout(() => {
-                          setLinkButtonText('Share Recovery Details');
-                          setLink(false);
-                        }, 3 * 1000);
-                      }}
-                    >
-                      {linkButtonText}
-                    </button>
-                  </div>
-
-                  {link && (
-                    <div>
+                  {versionContract !== '1.3.0' && (
+                    <>
                       <p className="small">
-                        Send this link to any other signatories on the multisig and ask them to also Sign.
+                        Please note, your Gnosis Safe is on a version which does not check the chain id of the current
+                        chain. If your Gnosis Safe on mainnet is also below v1.3.0 you could be prone to replay attacks
+                        by sending your ETHW.
                       </p>
-                    </div>
+                      <p className="small">
+                        <input type="checkbox" checked={checked} onChange={handleChange} />I understand, ignore chain id
+                        in the signature.
+                      </p>
+                    </>
                   )}
 
-                  <div className="tabs">
-                    <Link
-                      to="/sign"
-                      style={{
-                        fontWeight: location.pathname == '/sign' ? 'bold' : 'normal',
-                      }}
-                    >
-                      Sign
-                    </Link>
-                    <Link
-                      to="/send"
-                      style={{
-                        fontWeight: location.pathname == '/send' ? 'bold' : 'normal',
-                      }}
-                    >
-                      Send
-                    </Link>
-                  </div>
+                  {((versionContract !== '1.3.0' && checked) || versionContract === '1.3.0') && (
+                    <>
+                      <div>
+                        <button
+                          type="button"
+                          onClick={async () => {
+                            navigator.clipboard.writeText(
+                              `${window.location.origin}${process.env.PUBLIC_URL}#/sign?multisigAddress=${multisigAddress}&amount=${amountInput}&destinationAddress=${destinationAddress}&nonce=${nonceInput}`
+                            );
 
-                  <Routes>
-                    <Route
-                      path="/sign"
-                      element={
-                        <Sign
-                          multisigAddress={multisigAddress}
-                          destinationAddress={destinationAddress}
-                          amount={utils.parseEther(amountInput)}
-                          nonce={parseInt(nonceInput)}
+                            setLinkButtonText('Copied to cliboard...');
+                            setLink(true);
+
+                            setTimeout(() => {
+                              setLinkButtonText('Share Recovery Details');
+                              setLink(false);
+                            }, 3 * 1000);
+                          }}
+                        >
+                          {linkButtonText}
+                        </button>
+                      </div>
+
+                      {link && (
+                        <div>
+                          <p className="small">
+                            Send this link to any other signatories on the multisig and ask them to also Sign.
+                          </p>
+                        </div>
+                      )}
+
+                      <div className="tabs">
+                        <Link
+                          to="/sign"
+                          style={{
+                            fontWeight: location.pathname == '/sign' ? 'bold' : 'normal',
+                          }}
+                        >
+                          Sign
+                        </Link>
+                        <Link
+                          to="/send"
+                          style={{
+                            fontWeight: location.pathname == '/send' ? 'bold' : 'normal',
+                          }}
+                        >
+                          Send
+                        </Link>
+                      </div>
+
+                      <Routes>
+                        <Route
+                          path="/sign"
+                          element={
+                            <Sign
+                              multisigAddress={multisigAddress}
+                              destinationAddress={destinationAddress}
+                              amount={utils.parseEther(amountInput)}
+                              nonce={parseInt(nonceInput)}
+                              ignoreChainId={versionContract !== '1.3.0' && checked}
+                            />
+                          }
                         />
-                      }
-                    />
-                    <Route
-                      path="/send"
-                      element={
-                        <Send
-                          multisigAddress={multisigAddress}
-                          destinationAddress={destinationAddress}
-                          amount={utils.parseEther(amountInput)}
-                          nonce={parseInt(nonceInput)}
-                          onSuccess={onSuccess}
+                        <Route
+                          path="/send"
+                          element={
+                            <Send
+                              multisigAddress={multisigAddress}
+                              destinationAddress={destinationAddress}
+                              amount={utils.parseEther(amountInput)}
+                              nonce={parseInt(nonceInput)}
+                              ignoreChainId={versionContract !== '1.3.0' && checked}
+                              onSuccess={onSuccess}
+                            />
+                          }
                         />
-                      }
-                    />
-                  </Routes>
+                      </Routes>
+                    </>
+                  )}
                 </>
               )}
             </>
