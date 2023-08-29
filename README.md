@@ -1,7 +1,7 @@
 # ETHW Gnosis Safe Multisig Recovery
 
 ## Deployment
-You can try out this tool here: https://devanonon.github.io/ethw-gnosis-recovery/
+You can try out this tool here: https://devanoneth.github.io/ethw-gnosis-recovery/
 
 ## Setup
 `npm install`
